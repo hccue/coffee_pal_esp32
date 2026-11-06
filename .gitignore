@@ -1,0 +1,49 @@
+# ---- PlatformIO ----
+.pio/
+.pioenvs/
+.piolibdeps/
+.clang_complete
+.gcc-flags.json
+.ccls
+compile_commands.json
+
+# ---- IDE / editors ----
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# ---- Build artifacts ----
+build/
+*.o
+*.obj
+*.a
+*.elf
+*.bin
+*.hex
+*.map
+*.out
+*.exe
+*.dSYM/
+
+# ---- Python (tools/) ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# ---- Secrets / local config ----
+secrets.h
+credentials.h
+*.local.ini
+
+# ---- OS files ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Claude Code local settings ----
+.claude/settings.local.json
