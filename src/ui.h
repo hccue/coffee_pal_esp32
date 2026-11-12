@@ -22,6 +22,8 @@ class CoffeePalUI {
   bool takeChanged();
   int backlightPercent() const;
   bool sleeping() const { return sleeping_; }
+  // 1 right after + Coffee / + Froth is pressed, fading to 0 over RECENT_PRESS_MS.
+  float recentPress(Button b) const;
 
  private:
   enum Reaction { REACT_NONE, REACT_COFFEE, REACT_FROTH, REACT_CLEAN, REACT_ALARM };
@@ -62,6 +64,7 @@ class CoffeePalUI {
   float buttonPress_[BTN_COUNT] = {0, 0, 0};
   float buttonFlash_[BTN_COUNT] = {0, 0, 0};
   uint32_t resetArmedUntil_ = 0;
+  uint32_t lastPressMs_[2] = {0, 0};  // Last coffee / froth press; 0 means none yet.
 
   Reaction reaction_ = REACT_NONE;
   uint32_t reactionStart_ = 0;

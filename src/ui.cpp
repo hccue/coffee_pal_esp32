@@ -88,6 +88,7 @@ void CoffeePalUI::press(Button b, uint32_t nowMs) {
   sleeping_ = false;
   buttonFlash_[b] = 1.f;
   bool wasFull = tray_.full();
+  if (b == BTN_COFFEE || b == BTN_FROTH) lastPressMs_[b] = nowMs ? nowMs : 1;
 
   if (b == BTN_COFFEE) {
     tray_.coffees++;
@@ -216,6 +217,14 @@ void CoffeePalUI::stepParticles(float dt) {
   particleCount_ = kept;
 }
 
+float CoffeePalUI::recentPress(Button b) const {
+  if (b != BTN_COFFEE && b != BTN_FROTH) return 0.f;
+  if (!lastPressMs_[b]) return 0.f;
+  uint32_t age = now_ - lastPressMs_[b];
+  if (age >= RECENT_PRESS_MS) return 0.f;
+  return 1.f - (float)age / RECENT_PRESS_MS;
+}
+
 int CoffeePalUI::backlightPercent() const {
   if (tray_.full()) return 72 + (int)(28.f * (0.5f + 0.5f * sinf(t_ * 4.f)));
   return sleeping_ ? BRIGHTNESS_SLEEP : BRIGHTNESS_NORMAL;
@@ -266,7 +275,7 @@ void CoffeePalUI::drawTrayBar(Canvas &c) {
     c.clearClip();
   }
 
-  // One notch per drink: the remaining capacity can be counted at a glance.
+  // One notch per unit (a coffee; a froth takes two): the remaining capacity can be counted at a glance.
   for (int i = 1; i < TRAY_CAPACITY_UNITS; i++) {
     float x = TRAY_X + TRAY_W * i / TRAY_CAPACITY_UNITS;
     c.line(x, TRAY_Y + 3, x, TRAY_Y + TRAY_H - 3, 0.6f, TRAY_EDGE, 0.75f);
@@ -554,6 +563,10 @@ void CoffeePalUI::drawButton(Canvas &c, Button b) {
 
   c.rrect(x, y + 2 * (1.f - p), w, h, 13, depth);
   c.rrect(x, y + p * 2.f - 1.f * (1.f - p), w, h - 1, 13, face);
+
+  // Small dot in the corner while this drink was counted in the last few minutes.
+  float recent = recentPress(b);
+  if (recent > 0.f) c.circle(x + w - 11, y + 9 + p, 2.f + 1.2f * recent, ink, 0.35f + 0.5f * recent);
 
   float mid = x + w * 0.5f;
   float iconY = y + 5 + p;

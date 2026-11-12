@@ -2,9 +2,10 @@
 
 // ---- Tray rules: change these if your machine's tray behaves differently ----
 // Every drink adds "units" of water. The tray is full at TRAY_CAPACITY_UNITS.
-// 1 / 1 / 12 gives: 12 coffees alone, or 6 coffees + 6 froths.
+// A froth puts twice as much water in the tray as a coffee.
+// 1 / 2 / 12 gives: 12 coffees alone, 6 froths alone, or 4 coffees + 4 froths.
 #define COFFEE_UNITS 1
-#define FROTH_UNITS 1
+#define FROTH_UNITS 2
 #define TRAY_CAPACITY_UNITS 12
 // The assistant starts looking worried when this many units remain.
 #define TRAY_WARN_REMAINING_UNITS 2
@@ -19,3 +20,5 @@
 #define SLEEP_AFTER_MS (10UL * 60UL * 1000UL)
 // How long the reset button waits for its confirming second tap.
 #define RESET_CONFIRM_MS 3000UL
+// How long + Coffee / + Froth show a small fading dot after being pressed.
+#define RECENT_PRESS_MS (5UL * 60UL * 1000UL)

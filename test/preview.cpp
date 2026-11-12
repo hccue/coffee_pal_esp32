@@ -40,18 +40,24 @@ static void save(Sim &s, const std::string &dir, const char *name) {
 }
 
 static void testRules() {
-  // The two rules from the brief.
+  // 12 coffees fill the tray.
   Tray a;
   a.coffees = 11;
   assert(!a.full());
   a.coffees = 12;
   assert(a.full());
+  // A froth counts twice.
   Tray b;
-  b.coffees = 6;
-  b.froths = 5;
-  assert(!b.full());
-  b.froths = 6;
+  b.coffees = 4;
+  b.froths = 3;
+  assert(!b.full() && b.remaining() == 2);
+  b.froths = 4;
   assert(b.full());
+  Tray f;
+  f.froths = 5;
+  assert(!f.full());
+  f.froths = 6;
+  assert(f.full());
   Tray w;
   w.coffees = 9;
   assert(!w.warn());
@@ -71,6 +77,20 @@ static void testRules() {
   s.tapButton(BTN_FROTH);
   assert(s.ui.tray().froths == 1);
   assert(s.ui.takeChanged() && !s.ui.takeChanged());
+
+  // Recent presses are flagged, then fade out after RECENT_PRESS_MS.
+  assert(s.ui.recentPress(BTN_COFFEE) > 0.f && s.ui.recentPress(BTN_FROTH) > 0.f);
+  assert(s.ui.recentPress(BTN_RESET) == 0.f);
+  s.run(RECENT_PRESS_MS + 100);
+  assert(s.ui.recentPress(BTN_COFFEE) == 0.f && s.ui.recentPress(BTN_FROTH) == 0.f);
+  {
+    Sim r;
+    r.ui.begin(Tray(), r.now);
+    r.run(100);
+    assert(r.ui.recentPress(BTN_COFFEE) == 0.f);
+    r.tapButton(BTN_COFFEE);
+    assert(r.ui.recentPress(BTN_COFFEE) > 0.9f && r.ui.recentPress(BTN_FROTH) == 0.f);
+  }
 
   // A touch dropout mid-press is not a second tap.
   s.run(66, true, 54, 140);
@@ -142,9 +162,9 @@ int main(int argc, char **argv) {
   s->tapButton(BTN_RESET);
   save(*s, dir, "5_reset_confirm");
 
-  save(*fresh(6, 4), dir, "6_warn");
+  save(*fresh(6, 2), dir, "6_warn");
 
-  s = fresh(6, 6);
+  s = fresh(4, 4);
   s->run(1500);
   save(*s, dir, "7_full_alert");
 
@@ -156,5 +176,10 @@ int main(int argc, char **argv) {
   s = fresh(4, 2);
   s->run(SLEEP_AFTER_MS + 1000);
   save(*s, dir, "9_sleep");
+
+  s = fresh(4, 2);
+  s->tapButton(BTN_COFFEE);
+  s->run(150000);
+  save(*s, dir, "10_recent_press");
   return 0;
 }
