@@ -1,6 +1,6 @@
 # Coffee Pal
 
-A small animated mug for the Waveshare ESP32-S3-Touch-LCD-1.47 that counts coffees and milk froths, and tells you when to empty the drip tray before it overflows.
+A small animated mug for the Waveshare ESP32-S3-Touch-LCD-1.47 that counts coffees and milk froths, and tells you when to empty the drip tray before it overflows. It's made for the **Ninja Luxe Café Pro** espresso machine, and its tray limits are set for that machine's drip tray (you can change them in [src/config.h](src/config.h) for a different machine).
 
 ## Flashing the board
 
